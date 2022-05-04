@@ -17,16 +17,11 @@ class ElectroNeekController extends GetxController {
 
   Rxn<BotRunners> botRunners = Rxn<BotRunners>();
   Rxn<BotRunner> botRunner = Rxn<BotRunner>();
+  Rxn<WorkflowLaunches> workflowLaunches = Rxn<WorkflowLaunches>();
 
   @override
   void onReady() {
     super.onReady();
-  }
-
-  void getBotRunners() async {
-    fetchBotRunners().then((value) => botRunners.value = value).catchError((e) {
-      print(e);
-    });
   }
 
   Future<BotRunners> fetchBotRunners() async {

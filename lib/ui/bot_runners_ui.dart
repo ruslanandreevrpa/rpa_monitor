@@ -75,7 +75,7 @@ class BotRunnersUI extends StatelessWidget {
                               Expanded(
                                 child: Container(
                                   child:
-                                      const Icon(LineIcons.robot, size: 48.0),
+                                      const Icon(LineIcons.robot, size: 36.0),
                                 ),
                               ),
                               Text(
