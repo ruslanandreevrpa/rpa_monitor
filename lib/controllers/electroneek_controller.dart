@@ -81,15 +81,121 @@ class ElectroNeekController extends GetxController {
     }
   }
 
-  Future<WorkflowLaunches> fetchWorkflowLaunches(String? id) async {
+  Future<Object> fetchWorkflowLaunches(String? id) async {
+    var _workflowLaunches = await fetchWorkflowLaunchesLastTenMinutes(id);
+    if (_workflowLaunches.length > 0) {
+      return _workflowLaunches[0];
+    }
+    _workflowLaunches = await fetchWorkflowLaunchesLastHalfHour(id);
+    if (_workflowLaunches.length > 0) {
+      return _workflowLaunches[0];
+    }
+    _workflowLaunches = await fetchWorkflowLaunchesLastHour(id);
+    if (_workflowLaunches.length > 0) {
+      return _workflowLaunches[0];
+    }
+    _workflowLaunches = await fetchWorkflowLaunchesLastHalfDay(id);
+    if (_workflowLaunches.length > 0) {
+      return _workflowLaunches[0];
+    }
+    _workflowLaunches = await fetchWorkflowLaunchesLastDay(id);
+    if (_workflowLaunches.length > 0) {
+      return _workflowLaunches[0];
+    }
+    _workflowLaunches = await fetchWorkflowLaunchesUnknown(id);
+    return _workflowLaunches[0];
+  }
+
+  Future<List<Object>> fetchWorkflowLaunchesLastTenMinutes(String? id) async {
+    var today = DateTime.now();
+    var lastTenMinutes = today.subtract(const Duration(minutes: 10)).toUtc().toString();
+    final response = await http.get(
+        Uri.parse('$_baseURL/workflow/$id/launches?started_from=$lastTenMinutes'),
+        headers: {'Authorization': _authorization});
+
+    if (response.statusCode == 200) {
+      return WorkflowLaunches.fromJson(jsonDecode(response.body)).list!;
+    } else {
+      throw Exception('Ошибка получения данных');
+    }
+  }
+
+  Future<List<Object>> fetchWorkflowLaunchesLastHalfHour(String? id) async {
+    var today = DateTime.now();
+    var lastHalfHour = today.subtract(const Duration(minutes: 30)).toUtc().toString();
+    final response = await http.get(
+        Uri.parse('$_baseURL/workflow/$id/launches?started_from=$lastHalfHour'),
+        headers: {'Authorization': _authorization});
+
+    if (response.statusCode == 200) {
+      return WorkflowLaunches.fromJson(jsonDecode(response.body)).list!;
+    } else {
+      throw Exception('Ошибка получения данных');
+    }
+  }
+
+  Future<List<Object>> fetchWorkflowLaunchesLastHour(String? id) async {
+    var today = DateTime.now();
+    var lastHour = today.subtract(const Duration(hours: 1)).toUtc().toString();
+    final response = await http.get(
+        Uri.parse('$_baseURL/workflow/$id/launches?started_from=$lastHour'),
+        headers: {'Authorization': _authorization});
+
+    if (response.statusCode == 200) {
+      return WorkflowLaunches.fromJson(jsonDecode(response.body)).list!;
+    } else {
+      throw Exception('Ошибка получения данных');
+    }
+  }
+
+  Future<List<Object>> fetchWorkflowLaunchesLastHalfDay(String? id) async {
+    var today = DateTime.now();
+    var lastHalfDay = today.subtract(const Duration(hours: 12)).toUtc().toString();
+    final response = await http.get(
+        Uri.parse('$_baseURL/workflow/$id/launches?started_from=$lastHalfDay'),
+        headers: {'Authorization': _authorization});
+
+    if (response.statusCode == 200) {
+      return WorkflowLaunches.fromJson(jsonDecode(response.body)).list!;
+    } else {
+      throw Exception('Ошибка получения данных');
+    }
+  }
+
+  Future<List<Object>> fetchWorkflowLaunchesLastDay(String? id) async {
+    var today = DateTime.now();
+    var lastDay = today.subtract(const Duration(hours: 24)).toUtc().toString();
+    final response = await http.get(
+        Uri.parse('$_baseURL/workflow/$id/launches?started_from=$lastDay'),
+        headers: {'Authorization': _authorization});
+
+    if (response.statusCode == 200) {
+      return WorkflowLaunches.fromJson(jsonDecode(response.body)).list!;
+    } else {
+      throw Exception('Ошибка получения данных');
+    }
+  }
+
+  Future<List<Object>> fetchWorkflowLaunchesAll(String? id) async {
     final response = await http.get(
         Uri.parse('$_baseURL/workflow/$id/launches'),
         headers: {'Authorization': _authorization});
 
     if (response.statusCode == 200) {
-      return WorkflowLaunches.fromJson(jsonDecode(response.body));
+      return WorkflowLaunches.fromJson(jsonDecode(response.body)).list!;
     } else {
       throw Exception('Ошибка получения данных');
     }
   }
+
+  Future<List<Object>> fetchWorkflowLaunchesUnknown(String? id) async {
+    return WorkflowLaunches.fromJson({
+      "list": [
+        {
+          "status": "unknown",
+        }
+      ]
+    }).list!;
+  }
+
 }
